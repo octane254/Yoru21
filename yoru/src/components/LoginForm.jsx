@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader, CheckCircle } from "lucide-react";
 
 
 function LoginForm() {
+  const navigate = useNavigate("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -66,6 +68,8 @@ function LoginForm() {
       setPassword("");
       setShowPassword(false);
       setSuccess(false);
+
+      navigate("/");
     } finally {
       setIsLoading(false);
     }
@@ -173,7 +177,7 @@ function LoginForm() {
 
         <p className="form-footer">
           Don't have an account?{" "}
-          <a href="#sign-up" className="signup-link">
+          <a href="/sign-up" className="signup-link">
             Sign Up
           </a>
         </p>
