@@ -107,7 +107,23 @@ function SignUpForm() {
     setIsLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+    const response = await fetch('http://localhost:5000/api/users/sign-up', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        full_name: fullName,
+        email: email,
+        password: password,
+        confirm_password: confirmPassword,
+        terms_accepted: agreeTerms
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
       setSuccess(true);
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -115,17 +131,22 @@ function SignUpForm() {
       setFullName("");
       setEmail("");
       setPassword("");
-      setConfirmPassword("")
+      setConfirmPassword("");
       setShowPassword(false);
       setShowConfirmPassword(false);
       setAgreeTerms(false);
       setSuccess(false);
-
-      navigate("/");
-    } finally {
-      setIsLoading(false);
+      
+      navigate('/login');
+    } else {
+      setError(data.error || 'Signup failed');
     }
-  };
+  } catch (error) {
+    setError('Network error: ' + error.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="sign-up-container">

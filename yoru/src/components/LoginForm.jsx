@@ -59,17 +59,44 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setSuccess(true);
+      // CALL FLASK API
+      const response = await fetch('http://localhost:5000/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const data = await response.json();
 
-      setEmail("");
-      setPassword("");
-      setShowPassword(false);
-      setSuccess(false);
+      if (response.ok) {
+        // Save token and user info
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        setSuccess(true);
 
-      navigate("/");
+        // Wait 2 seconds then redirect
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        // Reset form
+        setEmail("");
+        setPassword("");
+        setShowPassword(false);
+        setSuccess(false);
+        
+        // Redirect to dashboard
+        navigate('/');
+      } else {
+        // Show error from Flask
+        setError(data.error || 'Login failed');
+      }
+    } catch (error) {
+      setError('Network error: ' + error.message);
     } finally {
       setIsLoading(false);
     }
