@@ -43,7 +43,6 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-
 header {
   background-color: var(--bg-secondary);
   border-bottom: 3px solid var(--border-color);
@@ -103,7 +102,6 @@ nav a:hover::after {
   width: 100%;
 }
 
-/* Theme Toggle Button */
 .theme-toggle {
   background-color: var(--button-bg);
   color: var(--button-text);
@@ -127,7 +125,6 @@ nav a:hover::after {
 .theme-toggle:active {
   transform: translate(0, 0);
 }
-
 
 section {
   max-width: 1400px;
@@ -155,13 +152,11 @@ section h2 {
   color: var(--text-primary);
 }
 
-
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 30px;
 }
-
 
 .card {
   background-color: var(--bg-secondary);
@@ -234,7 +229,6 @@ section h2 {
   text-align: center;
 }
 
-
 .loading {
   display: flex;
   flex-direction: column;
@@ -258,7 +252,6 @@ section h2 {
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-
 
 .error-container {
   display: flex;
@@ -305,7 +298,6 @@ section h2 {
   transform: translate(-1px, -1px);
 }
 
-
 section p {
   text-align: center;
   font-size: 18px;
@@ -317,7 +309,6 @@ section p {
   box-shadow: 4px 4px 0px var(--shadow-color);
   letter-spacing: 1px;
 }
-
 
 @keyframes spin {
   to {
@@ -339,7 +330,6 @@ section p {
 .card {
   animation: fadeIn 0.5s ease-out;
 }
-
 
 @media (max-width: 1024px) {
   header {
@@ -537,7 +527,6 @@ section p {
   background: var(--text-secondary);
 }
 
-/* Focus States for Accessibility */
 nav a:focus {
   outline: 2px solid var(--border-color);
   outline-offset: 2px;
