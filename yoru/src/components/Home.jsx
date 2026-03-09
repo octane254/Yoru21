@@ -5,6 +5,31 @@ function Home() {
   const [popular, setPopular] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Initialize theme from localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      setIsDarkMode(false);
+      document.body.classList.add("light-mode");
+    } else {
+      setIsDarkMode(true);
+      document.body.classList.remove("light-mode");
+    }
+  }, []);
+
+  // Toggle theme function
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    if (isDarkMode) {
+      document.body.classList.add("light-mode");
+      localStorage.setItem("theme", "light");
+    } else {
+      document.body.classList.remove("light-mode");
+      localStorage.setItem("theme", "dark");
+    }
+  };
 
   useEffect(() => {
     const fetchMangas = async () => {
@@ -116,6 +141,9 @@ function Home() {
           <a href="/library">Library</a>
           <a href="/explore">Explore</a>
           <a href="/updates">Updates</a>
+          <button className="theme-toggle" onClick={toggleTheme}>
+            {isDarkMode ? "☀️ Light" : "🌙 Dark"}
+          </button>
         </nav>
       </header>
 
