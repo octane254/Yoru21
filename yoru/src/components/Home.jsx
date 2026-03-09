@@ -13,21 +13,36 @@ function Home() {
         
         // Add timeout to prevent infinite loading
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000); 
+        const timeout = setTimeout(() => controller.abort(), 20000);
 
-        const [trendingRes, popularRes] = await Promise.all([
-          fetch("https://api.jikan.moe/v4/top/manga", {
-            signal: controller.signal
-          }),
-          fetch("https://api.jikan.moe/v4/top/manga?filter=bypopularity", {
-            signal: controller.signal
-          })
-        ]);
+        // Helper function to fetch with retry and delay
+        const fetchWithDelay = async (url, delayMs = 0) => {
+          if (delayMs > 0) {
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+          }
+          return fetch(url, { signal: controller.signal });
+        };
+
+        // Fetch trending manga - with 1 second delay to avoid rate limiting
+        const trendingRes = await fetchWithDelay(
+          "https://api.jikan.moe/v4/top/manga?type=manga&limit=25",
+          0
+        );
+
+        // Fetch popular manga - with 2 second delay to avoid rate limiting
+        const popularRes = await fetchWithDelay(
+          "https://api.jikan.moe/v4/top/manga?filter=bypopularity&limit=25",
+          2000
+        );
 
         clearTimeout(timeout);
 
-        if (!trendingRes.ok || !popularRes.ok) {
-          throw new Error(`API Error`);
+        if (!trendingRes.ok) {
+          throw new Error(`Trending API Error: ${trendingRes.status} ${trendingRes.statusText}`);
+        }
+
+        if (!popularRes.ok) {
+          throw new Error(`Popular API Error: ${popularRes.status} ${popularRes.statusText}`);
         }
 
         const trendingData = await trendingRes.json();
@@ -35,20 +50,26 @@ function Home() {
 
         // Check if data exists
         if (!trendingData.data || trendingData.data.length === 0) {
-          throw new Error("No manga data received");
+          throw new Error("No trending manga data received");
+        }
+
+        if (!popularData.data || popularData.data.length === 0) {
+          throw new Error("No popular manga data received");
         }
 
         setTrending(trendingData.data);
-        setPopular(popularData.data || []);
+        setPopular(popularData.data);
         setError(null);
       } catch (err) {
         console.error("Error fetching mangas:", err);
         
         // Set user-friendly error message
         if (err.name === 'AbortError') {
-          setError("Request timed out. Try refreshing the page.");
+          setError("Request timed out. The API took too long to respond. Try refreshing the page.");
+        } else if (err.message.includes("429")) {
+          setError("API rate limit reached. Please wait a moment and refresh the page.");
         } else {
-          setError(err.message || "Failed to load manga. Check your internet connection.");
+          setError(err.message || "Failed to load manga. Please check your internet connection and try again.");
         }
         
         setTrending([]);
@@ -60,7 +81,6 @@ function Home() {
 
     fetchMangas();
   }, []);
-
 
   
   if (isLoading) {
@@ -124,7 +144,8 @@ function Home() {
           <p>No manga found</p>
         )}
       </section>
-    {/* Popular Section */}
+
+      {/* Popular Section */}
       <section>
         <h2>Popular Manga</h2>
         {popular.length > 0 ? (
