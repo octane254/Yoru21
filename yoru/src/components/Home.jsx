@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 
 function Home() {
   const [trending, setTrending] = useState([]);
+  const [popular, setPopular] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -14,24 +15,31 @@ function Home() {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 10000); 
 
-        const response = await fetch("https://api.jikan.moe/v4/top/manga", {
-          signal: controller.signal
-        });
+        const [trendingRes, popularRes] = await Promise.all([
+          fetch("https://api.jikan.moe/v4/top/manga", {
+            signal: controller.signal
+          }),
+          fetch("https://api.jikan.moe/v4/top/manga?filter=bypopularity", {
+            signal: controller.signal
+          })
+        ]);
 
         clearTimeout(timeout);
 
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
+        if (!trendingRes.ok || !popularRes.ok) {
+          throw new Error(`API Error`);
         }
 
-        const data = await response.json();
+        const trendingData = await trendingRes.json();
+        const popularData = await popularRes.json();
 
         // Check if data exists
-        if (!data.data || data.data.length === 0) {
+        if (!trendingData.data || trendingData.data.length === 0) {
           throw new Error("No manga data received");
         }
 
-        setTrending(data.data);
+        setTrending(trendingData.data);
+        setPopular(popularData.data || []);
         setError(null);
       } catch (err) {
         console.error("Error fetching mangas:", err);
@@ -44,6 +52,7 @@ function Home() {
         }
         
         setTrending([]);
+        setPopular([]);
       } finally {
         setIsLoading(false);
       }
@@ -51,6 +60,7 @@ function Home() {
 
     fetchMangas();
   }, []);
+
 
   
   if (isLoading) {
@@ -95,6 +105,31 @@ function Home() {
         {trending.length > 0 ? (
           <div className="grid">
             {trending.slice(0, 12).map(manga => (
+              <div key={manga.mal_id} className="card">
+                {manga.images?.jpg?.image_url ? (
+                  <img 
+                    src={manga.images.jpg.image_url} 
+                    alt={manga.title || "Manga"}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="no-image">No Image</div>
+                )}
+                <h3>{manga.title || "Unknown Title"}</h3>
+                <p>⭐ {manga.score ? manga.score.toFixed(1) : "N/A"}/10</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No manga found</p>
+        )}
+      </section>
+    {/* Popular Section */}
+      <section>
+        <h2>Popular Manga</h2>
+        {popular.length > 0 ? (
+          <div className="grid">
+            {popular.slice(0, 12).map(manga => (
               <div key={manga.mal_id} className="card">
                 {manga.images?.jpg?.image_url ? (
                   <img 
