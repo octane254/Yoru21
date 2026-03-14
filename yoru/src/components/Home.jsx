@@ -113,7 +113,7 @@ function Home() {
   if (isLoading) {
     return (
       <div className="loading">
-        <div>Loading trending manga...</div>
+        <div></div>
       </div>
     );
   }

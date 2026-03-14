@@ -228,6 +228,34 @@ section h2 {
   border-top: 2px solid var(--border-color);
   text-align: center;
 }
+.card-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.read-btn {
+  padding: 10px 16px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: 2px solid var(--border-color);
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.read-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px var(--shadow-color);
+}
+
+.read-btn:active {
+  transform: translate(-1px, -1px);
+}
 
 .loading {
   display: flex;
