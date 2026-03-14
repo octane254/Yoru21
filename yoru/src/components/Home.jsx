@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import MangaReader from "./MangaReader"
 
 function Home() {
   const [trending, setTrending] = useState([]);
@@ -6,6 +7,7 @@ function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [selectedManga, setSelectedManga] = useState(null);
 
   // Initialize theme from localStorage
   useEffect(() => {
@@ -111,7 +113,7 @@ function Home() {
   if (isLoading) {
     return (
       <div className="loading">
-        <div></div>
+        <div>Loading trending manga...</div>
       </div>
     );
   }
@@ -133,6 +135,15 @@ function Home() {
 
   return (
     <div>
+      {/* Reader Modal */}
+      {selectedManga && (
+        <MangaReader 
+          mangaId={selectedManga.mal_id}
+          mangaTitle={selectedManga.title}
+          onClose={() => setSelectedManga(null)}
+        />
+      )}
+
       {/* Header */}
       <header>
         <h1>YORU</h1>
@@ -153,18 +164,26 @@ function Home() {
         {trending.length > 0 ? (
           <div className="grid">
             {trending.slice(0, 12).map(manga => (
-              <div key={manga.mal_id} className="card">
-                {manga.images?.jpg?.image_url ? (
-                  <img 
-                    src={manga.images.jpg.image_url} 
-                    alt={manga.title || "Manga"}
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="no-image">No Image</div>
-                )}
-                <h3>{manga.title || "Unknown Title"}</h3>
-                <p>⭐ {manga.score ? manga.score.toFixed(1) : "N/A"}/10</p>
+              <div key={manga.mal_id} className="card-wrapper">
+                <div className="card">
+                  {manga.images?.jpg?.image_url ? (
+                    <img 
+                      src={manga.images.jpg.image_url} 
+                      alt={manga.title || "Manga"}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="no-image">No Image</div>
+                  )}
+                  <h3>{manga.title || "Unknown Title"}</h3>
+                  <p>⭐ {manga.score ? manga.score.toFixed(1) : "N/A"}/10</p>
+                </div>
+                <button 
+                  className="read-btn"
+                  onClick={() => setSelectedManga(manga)}
+                >
+                  Read Manga
+                </button>
               </div>
             ))}
           </div>
@@ -179,18 +198,26 @@ function Home() {
         {popular.length > 0 ? (
           <div className="grid">
             {popular.slice(0, 12).map(manga => (
-              <div key={manga.mal_id} className="card">
-                {manga.images?.jpg?.image_url ? (
-                  <img 
-                    src={manga.images.jpg.image_url} 
-                    alt={manga.title || "Manga"}
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="no-image">No Image</div>
-                )}
-                <h3>{manga.title || "Unknown Title"}</h3>
-                <p>⭐ {manga.score ? manga.score.toFixed(1) : "N/A"}/10</p>
+              <div key={manga.mal_id} className="card-wrapper">
+                <div className="card">
+                  {manga.images?.jpg?.image_url ? (
+                    <img 
+                      src={manga.images.jpg.image_url} 
+                      alt={manga.title || "Manga"}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="no-image">No Image</div>
+                  )}
+                  <h3>{manga.title || "Unknown Title"}</h3>
+                  <p>⭐ {manga.score ? manga.score.toFixed(1) : "N/A"}/10</p>
+                </div>
+                <button 
+                  className="read-btn"
+                  onClick={() => setSelectedManga(manga)}
+                >
+                  Read Manga
+                </button>
               </div>
             ))}
           </div>
